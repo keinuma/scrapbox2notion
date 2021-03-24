@@ -18,6 +18,7 @@ load_dotenv(dotenv_path)
 
 NOTION_TOKEN = os.environ.get('NOTION_TOKEN')
 COLLECTION_VIEW_URL = os.environ.get('COLLECTION_VIEW_URL')
+SCRAPBOX_FILE_NAME = os.environ.get('SCRAPBOX_FILE_NAME')
 
 notion_client = NotionClient(token_v2=NOTION_TOKEN)
 collection_view = notion_client.get_collection_view(COLLECTION_VIEW_URL)
@@ -52,7 +53,7 @@ def upload_markdown_block(scrapbox_page):
 
 
 def main():
-    scrapbox_pages = load_scrapbox_file('sample.json')
+    scrapbox_pages = load_scrapbox_file(SCRAPBOX_FILE_NAME)
     if scrapbox_pages is None or len(scrapbox_pages) == 0:
         raise Exception('ページが存在しない')
     write_notion(scrapbox_pages)
