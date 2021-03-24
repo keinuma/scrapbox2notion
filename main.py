@@ -1,13 +1,15 @@
 import os
+from os.path import join, dirname
 import json
 from typing import List
+from concurrent.futures import ProcessPoolExecutor, wait
 
 from dotenv import load_dotenv
 from notion.client import NotionClient
 from md2notion.upload import convert, uploadBlock
 from tqdm import tqdm
 
-from lib import parser
+from src import parser
 
 
 load_dotenv(verbose=True)
@@ -33,13 +35,10 @@ def parse_scrapbox_lines(lines: List[str]) -> str:
 
 
 def write_notion(scrapbox_pages):
-    notion_pages = []
-
-    from concurrent.futures import ProcessPoolExecutor, Future, wait
     with ProcessPoolExecutor(max_workers=10) as executor:
         futures = [executor.submit(upload_markdown_block, scrapbox_page) for scrapbox_page in scrapbox_pages]
         done, not_done = wait(futures)
-        results = [future.result() for future in tqdm(futures)]
+        [future.result() for future in tqdm(futures)]
 
 
 def upload_markdown_block(scrapbox_page):
