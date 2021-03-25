@@ -2,10 +2,12 @@ import os
 from os.path import join, dirname
 import json
 from typing import List
+from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor, wait
 
 from dotenv import load_dotenv
 from notion.client import NotionClient
+from notion.collection import NotionDate
 from md2notion.upload import convert, uploadBlock
 from tqdm import tqdm
 
@@ -45,6 +47,10 @@ def write_notion(scrapbox_pages):
 def upload_markdown_block(scrapbox_page):
     new_page = collection_view.collection.add_row()
     new_page.title = scrapbox_page['title']
+
+    # プロパティ名は設定されてる値に変更が必要
+    created_date = datetime.fromtimestamp(scrapbox_page['created']).date()
+    new_page.zuo_cheng_ri = NotionDate(created_date)
 
     markdown_text = parse_scrapbox_lines(scrapbox_page['lines'])
     notion_block = convert(markdown_text)
